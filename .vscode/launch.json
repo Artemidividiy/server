@@ -8,7 +8,7 @@
             "name": "Python: модуль",
             "type": "python",
             "request": "launch",
-            "module": "main",
+            "module": "test",
             "justMyCode": true
         }
     ]

@@ -1,4 +1,5 @@
 
+import json
 from api.root import api_main
 from fastapi import FastAPI, status
 from controllers.scheme import SchemeController
@@ -41,6 +42,7 @@ async def get_schema_without_auth():
 
 @app.post("/schema/{user_id}")
 async def post_schema(user_id: int, schema: SchemeModel):
+    print(schema)
     scheme = SchemeController().postScheme(scheme=schema)
     return scheme.id
 
@@ -51,10 +53,20 @@ async def post_schema_without_auth():
 
 @app.post("/like/{schema_id}/{user_id}")
 async def like_schema(schema_id: int, user_id: int):
-    user_controller = UserController()
+    
     schema_controller = SchemeController()
-    schema_controller.like_schema(user_id, scheme=schema_id)
+    schema_controller.like_schema(user_id, scheme_id=schema_id)
     return "200"
 
-if __name__ == "__main__":
-    exec("uvicorn main:app --reload")
+@app.post("/dislike/{schema_id}/{user_id}")
+async def dislike_schema(schema_id: int, user_id: int):
+    
+    schema_controller = SchemeController()
+    schema_controller.dislike_schema(user_id, scheme_id=schema_id)
+    return "200"
+
+@app.get("/liked/{user_id}", )
+async def liked_schemas(user_id: int):
+    schema_controller = SchemeController()
+    schemas = schema_controller.user_liked(user_id=user_id)
+    return schemas
