@@ -1,33 +1,51 @@
-class Color: 
-    def __init__(self, name, hex, rgb) -> None:
-        self.name = name
-        self.hex = hex
-        self.rgb = rgb
 
-    def to_string(self): 
-        return f"name: {self.name}\nhex: {self.hex}, rgb: {self.rgb}\n---\n"
+from api.root import api_main
+from fastapi import FastAPI, status
+from controllers.scheme import SchemeController
+from controllers.user import UserController
+from models.scheme import SchemeModel
 
-class Algo: 
-    def __init__(self, name) -> None:
-        self.name = name
-    def to_string(self):
-        return self.name + '\n---'
-    
-class Scheme: 
-    def __init__(self, algo, colors) -> None:
-        self.algo = algo
-        self.colors = colors
-        
-    def to_string(self): 
-        target = ""
-        for i in self.colors: 
-            target += i.to_string()
-        target += f"\nvia {self.algo}"
+from models.user import UserModel
 
-def main():
-    a = [Color(i, i, i) for i in range(10)]
-    for i in a:
-        print(i.to_string())
+
+app = FastAPI()
+
+@app.get("/root")
+async def root(): 
+    return "this is a root"
+
+@app.post("/user")
+async def authenticate_user(user: UserModel):
+    controller = UserController()
+    if(user.authorized == False):
+        controller.postUser(user)
+    else:
+        users = controller.getUsers()
+        for i in users:
+            if i[1] == user.username:
+                return i[0]
+        return status.HTTP_400_BAD_REQUEST
+
+@app.get("/schema/{user_id}")
+async def get_schema(user_id: int):
+    schemas = SchemeController().getSchemas()
+    user = UserController().getUsers(id=user_id)
+    for i in schemas: 
+        print(i)
+
+@app.get("/schema/", status_code=status.HTTP_403_FORBIDDEN)
+async def get_schema_without_auth():
+    return "bad request"
+
+@app.post("/schema/{user_id}")
+async def post_schema(user_id: int, schema: SchemeModel):
+    SchemeController().postScheme(scheme=schema, user_id=user_id)
+
+
+@app.post("/schema", status_code=status.HTTP_403_FORBIDDEN)
+async def post_schema_without_auth():
+    return "bad request"
+
 
 if __name__ == "__main__":
-    main()
+    exec("uvicorn main:app --reload")
