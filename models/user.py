@@ -14,7 +14,7 @@ class UserBase:
 
 class UserModel(BaseModel):
     id: int | None = None
-    username: str
+
     password: str
     email: str
     authorized: bool | None = False

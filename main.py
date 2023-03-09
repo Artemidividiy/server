@@ -17,12 +17,14 @@ async def root():
 @app.post("/user")
 async def authenticate_user(user: UserModel):
     controller = UserController()
+    print(user)
     if(user.authorized == False):
-        controller.postUser(user)
+        user = controller.postUser(user)
+        return user.id
     else:
         users = controller.getUsers()
         for i in users:
-            if i[1] == user.username:
+            if i[1] == user.email:
                 return i[0]
         return status.HTTP_400_BAD_REQUEST
 
@@ -39,13 +41,20 @@ async def get_schema_without_auth():
 
 @app.post("/schema/{user_id}")
 async def post_schema(user_id: int, schema: SchemeModel):
-    SchemeController().postScheme(scheme=schema, user_id=user_id)
+    scheme = SchemeController().postScheme(scheme=schema)
+    return scheme.id
 
 
 @app.post("/schema", status_code=status.HTTP_403_FORBIDDEN)
 async def post_schema_without_auth():
     return "bad request"
 
+@app.post("/like/{schema_id}/{user_id}")
+async def like_schema(schema_id: int, user_id: int):
+    user_controller = UserController()
+    schema_controller = SchemeController()
+    schema_controller.like_schema(user_id, scheme=schema_id)
+    return "200"
 
 if __name__ == "__main__":
     exec("uvicorn main:app --reload")
