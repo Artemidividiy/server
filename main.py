@@ -26,8 +26,10 @@ async def authenticate_user(user: UserModel):
         users = controller.getUsers()
         for i in users:
             if i[1] == user.email:
-                return i[0]
-        return status.HTTP_400_BAD_REQUEST
+                if i[2] == user.password: 
+                    return i[0]
+                else: return "wrong password"
+        return "not found"
 
 @app.get("/schema/{user_id}")
 async def get_schema(user_id: int):
