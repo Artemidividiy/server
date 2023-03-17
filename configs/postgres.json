@@ -1,6 +1,6 @@
 {
     "host": "127.0.0.1",
-    "port": 8014,
+    "port": 5432,
     "database": "colorful",
     "user": "backend_user",
     "password": "backend"

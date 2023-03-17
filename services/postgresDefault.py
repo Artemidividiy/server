@@ -62,7 +62,7 @@ class PostgreServiceDefault:
             print(e)
 
     def execute(self, query, vars) -> Any:
-        self.cursor.execute(query, vars)
+        self.cursor.execute(query=query, vars=vars)
         self.connection.commit()
         try:
             return self.cursor.fetchall()
